@@ -4,7 +4,7 @@ from pydantic import BaseSettings
 class Settings(BaseSettings):
     app_title: str = 'FastAPI app'
     description: str = 'It was lot of fun'
-    database_url: str = 'sqlite+aiosqlite:///./fastapi.db'
+    database_url: str = 'database url'
     secret: str = 'SECRET'
 
     class Config:
