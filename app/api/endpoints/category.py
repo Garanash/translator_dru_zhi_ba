@@ -18,7 +18,7 @@ router = APIRouter(prefix='/categories', tags=['Категории'])
 @router.post(
     '/create',
     response_model=CategoryDB,
-    dependencies=Depends[current_superuser],
+    dependencies=[Depends(current_superuser)],
     )
 async def create_new_category(
     category: Annotated[CategoryCreate, Form()],
@@ -45,7 +45,7 @@ async def get_all_categories(
     '/update',
     response_model=CategoryDB,
     response_model_exclude_none=True,
-    dependencies=Depends[current_superuser],
+    dependencies=[Depends(current_superuser)],
 )
 async def update_category_in_db(
     category_id: int,
@@ -64,7 +64,7 @@ async def update_category_in_db(
 @router.delete(
     '/delete',
     response_model=CategoryDB,
-    dependencies=Depends[current_superuser],
+    dependencies=[Depends(current_superuser)],
 )
 async def delete_category_from_db(
     category_id: int,

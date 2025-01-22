@@ -4,6 +4,7 @@ from fastapi.encoders import jsonable_encoder
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.crud.base import CRUDBase
 from app.models.category import Category
 from app.schemas.category import CategoryCreate, CategoryUpdate
 
