@@ -4,6 +4,7 @@ from fastapi import APIRouter, Form, Depends, HTTPException, Request
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.db import get_session
+from app.core.user import current_superuser
 from app.crud.category import (create_category, read_all_categories_from_db,
                                get_category_by_id,
                                update_category, delete_category)
@@ -17,8 +18,9 @@ router = APIRouter(prefix='/categories', tags=['Категории'])
 @router.post(
     '/create',
     response_model=CategoryDB,
+    dependencies=Depends[current_superuser],
     )
-async def create_new_metiz(
+async def create_new_category(
     category: Annotated[CategoryCreate, Form()],
     request: Request,
     session: AsyncSession = Depends(get_session)
@@ -31,7 +33,7 @@ async def create_new_metiz(
     '/all_categories',
     response_model=list[CategoryDB]
 )
-async def get_all_metizes(
+async def get_all_categories(
     request: Request,
     session: AsyncSession = Depends(get_session)
 ):
@@ -43,6 +45,7 @@ async def get_all_metizes(
     '/update',
     response_model=CategoryDB,
     response_model_exclude_none=True,
+    dependencies=Depends[current_superuser],
 )
 async def update_category_in_db(
     category_id: int,
@@ -60,7 +63,8 @@ async def update_category_in_db(
 
 @router.delete(
     '/delete',
-    response_model=CategoryDB
+    response_model=CategoryDB,
+    dependencies=Depends[current_superuser],
 )
 async def delete_category_from_db(
     category_id: int,
