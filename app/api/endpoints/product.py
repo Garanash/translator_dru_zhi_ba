@@ -4,9 +4,7 @@ from fastapi import APIRouter, Form, Depends, HTTPException, Request
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.db import get_session
-from app.crud.product import (create_product, read_all_products_from_db,
-                              get_product_by_id,
-                              update_product, delete_product)
+from app.crud.product import product_crud
 from app.models.product import Product
 from app.schemas.product import ProductCreate, ProductDB, ProductUpdate
 
@@ -23,7 +21,7 @@ async def create_new_product(
     request: Request,
     session: AsyncSession = Depends(get_session)
 ):
-    new_product = await create_product(product, session)
+    new_product = await product_crud.create(product, session)
     return new_product
 
 
@@ -35,7 +33,7 @@ async def get_all_products(
     request: Request,
     session: AsyncSession = Depends(get_session)
 ):
-    all_products = await read_all_products_from_db(session)
+    all_products = await product_crud.get_multi(session)
     return all_products
 
 
@@ -52,7 +50,7 @@ async def update_product_in_db(
     product = await check_product_exists(
         product_id, session
     )
-    product = await update_product(
+    product = await product_crud.update(
         product, obj_in, session
     )
     return product
@@ -69,7 +67,7 @@ async def delete_product_from_db(
     product = await check_product_exists(
         product_id, session
     )
-    product = await delete_product(product, session)
+    product = await product_crud.remove(product, session)
     return product
 
 
@@ -77,7 +75,7 @@ async def check_product_exists(
     product_id: int,
     session: AsyncSession,
 ) -> Product:
-    product = await get_product_by_id(
+    product = await product_crud.get(
         product_id, session
     )
     match product:

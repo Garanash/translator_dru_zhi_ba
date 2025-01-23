@@ -5,9 +5,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.db import get_session
 from app.core.user import current_superuser
-from app.crud.category import (create_category, read_all_categories_from_db,
-                               get_category_by_id,
-                               update_category, delete_category)
+from app.crud.category import category_crud
 from app.models.category import Category
 from app.schemas.category import CategoryCreate, CategoryDB, CategoryUpdate
 
@@ -25,7 +23,7 @@ async def create_new_category(
     request: Request,
     session: AsyncSession = Depends(get_session)
 ):
-    new_category = await create_category(category, session)
+    new_category = await category_crud.create(category, session)
     return new_category
 
 
@@ -37,7 +35,7 @@ async def get_all_categories(
     request: Request,
     session: AsyncSession = Depends(get_session)
 ):
-    all_categories = await read_all_categories_from_db(session)
+    all_categories = await category_crud.get_multi(session)
     return all_categories
 
 
@@ -55,7 +53,7 @@ async def update_category_in_db(
     category = await check_category_exists(
         category_id, session
     )
-    category = await update_category(
+    category = await category_crud.update(
         category, obj_in, session
     )
     return category
@@ -73,7 +71,7 @@ async def delete_category_from_db(
     category = await check_category_exists(
         category_id, session
     )
-    category = await delete_category(category, session)
+    category = await category_crud.remove(category, session)
     return category
 
 
@@ -81,7 +79,7 @@ async def check_category_exists(
     category_id: int,
     session: AsyncSession,
 ) -> Category:
-    category = await get_category_by_id(
+    category = await category_crud.get(
         category_id, session
     )
     match category:
