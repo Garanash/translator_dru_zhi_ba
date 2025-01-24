@@ -1,6 +1,6 @@
 from typing import Annotated
 
-from fastapi import APIRouter, Form, Depends, HTTPException, Request
+from fastapi import APIRouter, Form, Depends, HTTPException, Query, Request
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.db import get_session
@@ -69,6 +69,23 @@ async def delete_product_from_db(
     )
     product = await product_crud.remove(product, session)
     return product
+
+
+@router.get(
+    '/{product_id}',
+    response_model=ProductDB
+)
+async def search_products(
+    search_field: str = Query(..., description="Field to search by"),
+    search_term: str = Query(..., description="Term to search for"),
+    session: AsyncSession = Depends(get_session),
+):
+    products = await product_crud.get_by_attribute(
+        attr_name=search_field,
+        attr_value=search_term,
+        session=session,
+    )
+    return products
 
 
 async def check_product_exists(
